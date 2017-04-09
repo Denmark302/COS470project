@@ -37,13 +37,11 @@
 				 ((eq 'G p);not working currelnty because we need a search for the pathing to work.
 				 	(print (cdr a)))
 				 ((eq 'O p);this should pass in any obstacles that are in the list an set it in the test world
-				 	(setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 0 a) (nth 1 a))))))
+				 	(setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 1 a) (nth 2 a))))))
 				 ((eq 'M p);this creats the size of the map
 				 	(setf (w-nodes test-world) (append (w-nodes test-world) (list(list (nth 1 a)  (nth 2 a))))))
-				 ((eq 'R p) ;this creates an agent ROBOT
-				 	(create-agent (nth 1 a) (nth 2 a) (nth 3 a)))
-
-				))))
+				 ((eq 'R p) ;this creates an agent ROBOT (cmax)(alt)(pos (x y))
+				 	(create-agent (nth 1 a) (nth 2 a) (nth 3 a)))))))
 
 
 
