@@ -35,7 +35,10 @@
 		do(loop for p in a
 			do (cond
 				 ((eq 'G p);not working currelnty because we need a search for the pathing to work.
-				 	(print (cdr a)))
+				 	(      ;This set a variable goal in a list (x y z) z for height
+				 		setf goal(list (nth 1 a)(nth 2 a)( nth 3 a)))
+				 		;(setf path ("search" test-world goal))
+				 	)
 				 ((eq 'O p);this should pass in any obstacles that are in the list an set it in the test world
 				 	(setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 1 a) (nth 2 a))))))
 				 ((eq 'M p);this creats the size of the map
