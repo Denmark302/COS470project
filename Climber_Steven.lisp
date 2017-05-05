@@ -1,7 +1,19 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; 
+;;; 
+;;; 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 (defvar object)                ;hold the list of the coord of objects, agents ,and the size of the world
 (defvar worldMap '())          ;this hold a list of the world
 (defvar worldSize '())           ;hold the size of the world in (x,y) form.
-(defvar agentMap '())
+
+(defvar goal nil)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; reads input from a file into a global variable 
@@ -31,128 +43,22 @@
     do(loop for p in a
       do (cond
          ((eq 'G p);not working currelnty because we need a search for the pathing to work.
-          (cdr a))
+
+          (setf goal  (cdr a))
+
+          )
          ((eq 'O p);this should pass in any obstacles that are in the list an set it in the test world
-          (setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 0 a) (nth 1 a))))))
+          ;(setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 0 a) (nth 1 a)))))
+          )
          ((eq 'M p);this creats the size of the map
           (create-World-list (nth 1 a) (nth 2 a) (nth 3 a))
           (setq worldSize (list (nth 1 a) (nth 2 a)))
           )
          ((eq 'R p) ;this creates an agent ROBOT
           ;The input
-          (create-agent (nth 1 a) (nth 2 a) (nth 3 a)))
+          (defvar p (create-agent (nth 1 a) (nth 2 a) (nth 3 a))))
 
         ))))
-;------------------------------------------------------------------------------------------------------------------------------------
-;;creates the list of the world in the form of (x y z) z being the height
-(defun create-World-list (x y z)
-  (setf tempZ z)
-  (setf tempWorld '())
-  (setf tempWorld2 '())
-  (setf count1 0)
-  (dotimes (n x)
-    (dotimes (n2 y)
-      (setq tempWorld2 (append tempWorld2 (list(list n n2 0))))
-      (setq agentMap tempWorld2)
-   ;   (print tempWorld2)
-      (setq tempWorld (append tempWorld (list(list n n2 (nth count1 tempZ)))))
-      (setq worldMap tempWorld)
-      (setf count1 (+ 1 count1))
-      )
-    )
-  (setf count1 0)
-  )
-;------------------------------------------------------------------------------------------------------------------------------------
-;This print the list of the world inputed into the function (map, sizeofmap)
-;------------------------------------------------------------------------------------------------------------------------------------
-(defun print-world(x size)
-  (setf size1 (nth 0 size))
-  (setf size2 (nth 1 size))
-  (setf count1 0)
-  (dotimes (n size1)
-    (format t "~%")
-    (dotimes(n2 size2)
-    (format t "~d"(nth count1 x ))
-    (setf count1 (+ 1 count1))
-
-  ))
-
-)
-;------------------------------------------------------------------------------------------------------------------------------------
-;agent knowledge section
-;------------------------------------------------------------------------------------------------------------------------------------
-
-;;need to take the lowest height path.
-
-
-
-
-
-
-
-
-;update the area the agent can move to its reliveative postion
-(defun update-agent-world (world-map agent-map size currentPos)
-  (setf rowSize (nth 0 worldSize))
-  (setf Tempcount 0)
-  (loop for a in world-map
-    
-    do(cond
-      ((equalp currentPos a)
-          ;checkPos to the worldMap
-          (ignore-errors
-          (if(not (equalp (nth Tempcount agent-map) (nth Tempcount world-map)))
-            (progn
-            (print "update current postion")
-            (ignore-errors(setf (nth 2(nth Tempcount agent-map)) (nth 2 (nth Tempcount world-map)))))
-            )
-          ;check if down is updated
-          (if(not(equalp (nth (+ Tempcount rowSize) agent-map) (nth (+ Tempcount rowSize) world-map)))
-            ;check down if not already updated
-            (if (and (<=(+ Tempcount 1) size) (>=(+ Tempcount 1) 0))
-              (progn
-                (print "Checking Down")
-     			  (setf (nth 2 (nth (+ Tempcount rowSize) agent-map))(nth 2 (nth (+ Tempcount rowSize) world-map)))
-
-                )))
-          
-          (if(not(equalp (nth (+ Tempcount 1) agent-map) (nth (+ Tempcount 1) world-map)))
-            ;check left
-            (if (and (<=(+ Tempcount 1) size) (>=(+ Tempcount 1) 0))
-              (progn
-                (print "Checking Left")
-             (setf(nth 2 (nth (+ Tempcount 1) agent-map))(nth 2 (nth (+ Tempcount 1) world-map)))
-                )))
-
-          (if(not(equalp (nth (- Tempcount 1) agent-map) (nth (- Tempcount 1) world-map)))
-          ;check right
-            (if (and (<=(- Tempcount 1) size) (>=(- Tempcount 1) 0))
-              (progn
-                (print "Checking Right")
-               (setf(nth 2 (nth (- Tempcount 1) agent-map))(nth 2 (nth (- Tempcount 1) world-map)))
-
-                )))
-
-
-
-          (if(not(equalp (nth (- Tempcount rowSize) agent-map) (nth (- Tempcount rowSize) world-Map)))
-          ;;check up
-            (if (and (<=(- Tempcount rowSize) size) (>=(- Tempcount rowSize) 0))
-              (progn
-                (print "Checking Up")
-                (setf (nth 2 (nth (- Tempcount rowSize) agent-map)) (nth 2 (nth (- Tempcount rowSize) world-map)))
-                ))))
-        
-        )
-      )
-      ;count to grab the position of the currentPOS
-    do(setf Tempcount (+ 1 Tempcount))
-      ;reset the count
-      )(setf Tempcount 0))
-
-
-
-
 
 (defclass wo-node () ;represents a node in the world, will be used in a list to represent the world
   ((xpos :accessor x-pos  ;x-position
@@ -214,12 +120,130 @@
    (GPS-location :accessor loc
      :initform (list )
      :initarg :GPS-location)))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; This create a gobal variables for an instance of the agent class
+;;; to be access for the other fuctions.
+;;; 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun create-agent(cmax alt loca)
          ;create an agent at a posiion and altitude, make sure altitude is correct when placing agent, location input is in a (list x y) form
-  (defvar p (make-instance 'agent :climb-max cmax :altitude alt :GPS-location loca))
+   (make-instance 'agent :climb-max cmax :altitude alt :GPS-location loca)
 
   )
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; This create a map of the world for both the actual world and
+;;; the agent map. The agent map will always be instanitated with 
+;;; 0 for height. 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;------------------------------------------------------------------------------------------------------------------------------------
+;;creates the list of the world in the form of (x y z) z being the height
+(defun create-World-list (x y z)
+  (setf tempZ z)
+  (setf tempWorld '())
+  (setf tempWorld2 '())
+  (setf agentMap '())
+  (setf count1 0)
+  (dotimes (n x)
+    (dotimes (n2 y)
+      (setq tempWorld2 (append tempWorld2 (list(list n n2 0))))
+      (setq agentMap tempWorld2)
+      (setq tempWorld (append tempWorld (list(list n n2 (nth count1 tempZ)))))
+      (setq worldMap tempWorld)
+      (setf count1 (+ 1 count1))
+      )
+    )
+  (setf count1 0)
+  (setf (know p) agentMap)
+  )
+
+;(setf (know p) agentMap)
+;;set the agent object with a list of it's own world
+
+;------------------------------------------------------------------------------------------------------------------------------------
+;This print the list of the world inputed into the function (map, sizeofmap)
+;------------------------------------------------------------------------------------------------------------------------------------
+(defun print-world(x size)
+  (setf size1 (nth 0 size))
+  (setf size2 (nth 1 size))
+  (setf count1 0)
+  (dotimes (n size1)
+    (format t "~%")
+    (dotimes(n2 size2)
+    (format t "~d"(nth count1 x ))
+    (setf count1 (+ 1 count1))
+
+  ))
+
+)
+;------------------------------------------------------------------------------------------------------------------------------------
+;agent knowledge section
+;------------------------------------------------------------------------------------------------------------------------------------
+
+;;need to take the lowest height path.
+
+
+;update the area the agent can move to its reliveative postion
+(defun update-agent-world (world-map agent-map size currentPos)
+  (setf rowSize (nth 0 worldSize))
+  (setf Tempcount 0)
+  (loop for a in world-map
+    do(cond
+      ((equalp currentPos a)
+          ;checkPos to the worldMap
+          (ignore-errors
+          (if(not (equalp (nth Tempcount agent-map) (nth Tempcount world-map)))
+            (progn
+            (print "update current postion")
+            (ignore-errors(setf (nth 2(nth Tempcount agent-map)) (nth 2 (nth Tempcount world-map)))))
+            )
+          ;check if down is updated
+          (if(not(equalp (nth (+ Tempcount rowSize) agent-map) (nth (+ Tempcount rowSize) world-map)))
+            ;check down if not already updated
+            (if (and (<=(+ Tempcount 1) size) (>=(+ Tempcount 1) 0))
+              (progn
+                (print "Checking Down")
+     			  (setf (nth 2 (nth (+ Tempcount rowSize) agent-map))(nth 2 (nth (+ Tempcount rowSize) world-map)))
+                )))     
+          (if(not(equalp (nth (+ Tempcount 1) agent-map) (nth (+ Tempcount 1) world-map)))
+            ;check left
+            (if (and (<=(+ Tempcount 1) size) (>=(+ Tempcount 1) 0))
+              (progn
+                (print "Checking Left")
+             (setf(nth 2 (nth (+ Tempcount 1) agent-map))(nth 2 (nth (+ Tempcount 1) world-map)))
+                )))
+          (if(not(equalp (nth (- Tempcount 1) agent-map) (nth (- Tempcount 1) world-map)))
+          ;check right
+            (if (and (<=(- Tempcount 1) size) (>=(- Tempcount 1) 0))
+              (progn
+                (print "Checking Right")
+               (setf(nth 2 (nth (- Tempcount 1) agent-map))(nth 2 (nth (- Tempcount 1) world-map)))
+
+                )))
+          (if(not(equalp (nth (- Tempcount rowSize) agent-map) (nth (- Tempcount rowSize) world-Map)))
+          ;;check up
+            (if (and (<=(- Tempcount rowSize) size) (>=(- Tempcount rowSize) 0))
+              (progn
+                (print "Checking Up")
+                (setf (nth 2 (nth (- Tempcount rowSize) agent-map)) (nth 2 (nth (- Tempcount rowSize) world-map)))
+                ))))
+        
+        )
+      )
+      ;count to grab the position of the currentPOS
+    do(setf Tempcount (+ 1 Tempcount))
+      ;reset the count
+      )(setf Tempcount 0))
+
+
+
+
+
+
+
 
   
 
@@ -234,28 +258,10 @@
 ;;update the agent
 (setf x (nth 0 (loc agent1)))
 (setf y (nth 1 (loc agent1)))
-
-
-
 ;grab current postion(x y z)
 (setf currentPos (grab-currentPOS-height x y world-map))
 (update-agent-world world-Map agent-map sizeWorld currentPos)
 ;check which node is srrounding height, it max height
-
-
-;grab max height
-
-
-;;move up
-  ;(print "moving up")
-;;move down
-  ;(print "moving down")
-;;move left
-  ;(print "moving left")
-
-;;move right
-  ;(print "moving right")
-
 
 )
 
@@ -269,26 +275,117 @@
         (return a)))))
 
 
+(defun follow-path (world-map agent-map path goal)
+  (setf Newpath path)
+  (setf tempcountNew 0)
+  (setf rowSizeNew (nth 0 worldSize))
+  (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+  (print-world (know p) worldsize)
+  (print "Done updating")
+  (loop while(not (equalp (list (nth 0 (loc p)) (nth 1 (loc P))) goal))
+    ;loop in the world map
+    do(loop for num in agent-map
+      do(print goal)
+      do(cond
+        ;create list of (x,y) then compare with list of (x,y)
+
+        ((equalp(list(nth 0 (loc p))(nth 1 (loc p))) (nth 0 Newpath))
+          
+            (ignore-errors
+              ;check right of the agent map
+            (if(and (equalp (list (nth 0 (nth (+ tempcountNew 1) agent-map))  (nth 1 (nth (+ tempcountNew 1) agent-map))) (nth 1 Newpath)) 
+              (<= (nth 2 (nth (+ tempcountNew 1) agent-map))) (c-max p))
+              (progn
+              (print (loc p))
+              (print "Moving Right")
+              (setf (loc p) (nth (+ tempcountNew 1) agent-map))
+              (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+              (print-world (know p) worldsize)
+              (setf Newpath (cdr Newpath))
+             
+              )
+              )
+
+            (if(and (equalp (list (nth 0 (nth (- tempcountNew 1) agent-map))  (nth 1 (nth (- tempcountNew 1) agent-map))) (nth 1 Newpath)) 
+              (<= (nth 2 (nth (- tempcountNew 1) agent-map))) (c-max p))
+              (progn
+              (print (loc p))
+              (print "Moving Right")
+              (setf (loc p) (nth (- tempcountNew 1) agent-map))
+              (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+              (print-world (know p) worldsize)
+              (setf Newpath (cdr Newpath))
+             
+              )
+              )
+
+
+            (if(and (equalp (list (nth 0 (nth (+ tempcountNew rowSizeNew) agent-map)) (nth 1 (nth (+ tempcountNew rowSizeNew) agent-map)))
+             (nth 1 Newpath)) (<= (nth 2 (nth (+ tempcountNew 1) agent-map))) (c-max p))
+              (progn
+              (print (loc p))
+              (print "Moving Down")
+              (setf (loc p) (nth (+ tempcountNew rowSizeNew) agent-map))
+              (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+              (print-world (know p) worldsize)
+              (setf Newpath (cdr Newpath))
+              
+              )
+              )
+
+            (if(and (equalp (list (nth 0 (nth (- tempcountNew rowSizeNew) agent-map))  (nth 1 (nth (- tempcountNew rowSizeNew) agent-map))) (nth 1 Newpath))
+             (<= (nth 2 (nth (- tempcountNew 1) agent-map))) (c-max p))
+              (progn
+              (print (loc p))
+              (print "Moving Up")
+              (setf (loc p) (nth (- tempcountNew rowSizeNew) agent-map))
+              (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+              (print-world (know p) worldsize)
+              (setf Newpath (cdr Newpath))
+              
+              )
+              )
+
+            )
+          )
+
+     
+        );end of do
+      do(if(<= tempcountNew (list-length agent-map))
+            (setf tempcountNew (+ 1 tempcountNew)))
+
+      )
+
+
+    do(setf tempcountNew 0)
+    )
+
+  (print "found Goal")
+)
+
+(defun input-world()
+(input)                        ;this automaticly read in the file
+(read_input object)
+)
 
 
 
+(defun newStart()
+  (setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
+  (follow-path worldMap (know p) y goal)
+ 
 
-
-
-
+)
 
 
 (defun start()
-(setf test-world (make-instance 'world)) ;world is stored as alist of 2 element list as (x, y)s
-(input)                        ;this automaticly read in the file
-(read_input object)
+
 (print "World Map")            ;this passes the object into a gobal variable
 (print-world worldMap worldSize)
 (print "Agent Map ")
 (print-world agentMap worldSize)
 (print "Agent works ")
 (agent-knowledge-base worldMap agentMap (list-length agentMap) p)
-
 (print "Agent Map ")
 (print-world agentMap worldSize)
 )
