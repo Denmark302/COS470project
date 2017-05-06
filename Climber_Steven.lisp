@@ -179,14 +179,14 @@
   ))
 
 )
-;------------------------------------------------------------------------------------------------------------------------------------
-;agent knowledge section
-;------------------------------------------------------------------------------------------------------------------------------------
 
-;;need to take the lowest height path.
-
-
-;update the area the agent can move to its reliveative postion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; this update the agent knowleage of its own world and is used when 
+;;; following a path to update.
+;;; 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;n
 (defun update-agent-world (world-map agent-map size currentPos)
   (setf rowSize (nth 0 worldSize))
   (setf Tempcount 0)
@@ -283,6 +283,7 @@
 (defun follow-path (world-map agent-map path goal)
   (setf Newpath path)
   (setf tempcountNew 0)
+  (setf lastPosition)
   (setf rowSizeNew (nth 0 worldSize))
   (setup-agent world-map agent-map)
   (print-world (know p) worldsize)
@@ -354,6 +355,17 @@
             )
 
           )
+
+
+        ((not(equalp (loc p) (nth tempcountNew world-map)))
+
+          (print "fuck")
+
+
+          )
+
+
+
         );end of do
       do(if(<= tempcountNew (list-length agent-map))
             (setf tempcountNew (+ 1 tempcountNew)))
@@ -375,9 +387,9 @@
 
 
 
-(defun newStart()
- ; (setf y '((0 0)(0 1)(0 2)(4 1)(1 3)(2 3)(3 3)(3 4)(4 4)))
-  (setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
+(defun Start()
+  (setf y '((0 0)(0 1)(0 2)(4 1)(1 3)(2 3)(3 3)(3 4)(4 4)))
+  ;(setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
   (follow-path worldMap (know p) y goal)
  
 
