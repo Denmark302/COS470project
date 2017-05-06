@@ -1,9 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
+;;;Btw you may have to use 
+;;; (load "Projectlisp.lisp")(input-world)(Start)
 ;;; 
-;;; 
-;;; 
-;;; 
+;;; the input add the file and worlds into the world and agent 
+;;; the obsticals is currently disabled.
+;;; The start function start the follow-path function 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
@@ -48,7 +49,7 @@
 
           )
          ((eq 'O p);this should pass in any obstacles that are in the list an set it in the test world
-          ;(setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 0 a) (nth 1 a)))))
+         ; (setf (obstacle test-world) (append (obstacle test-world) (list(list (nth 0 a) (nth 1 a)))))
           )
          ((eq 'M p);this creats the size of the map
           (create-World-list (nth 1 a) (nth 2 a) (nth 3 a))
@@ -159,9 +160,6 @@
   (setf count1 0)
   (setf (know p) agentMap)
   )
-
-;(setf (know p) agentMap)
-;;set the agent object with a list of it's own world
 
 ;------------------------------------------------------------------------------------------------------------------------------------
 ;This print the list of the world inputed into the function (map, sizeofmap)
@@ -283,7 +281,8 @@
 (defun follow-path (world-map agent-map path goal)
   (setf Newpath path)
   (setf tempcountNew 0)
-  (setf lastPosition)
+  (setf lastTempCount 0)
+  (setf lastPosition nil)
   (setf rowSizeNew (nth 0 worldSize))
   (setup-agent world-map agent-map)
   (print-world (know p) worldsize)
@@ -304,10 +303,12 @@
               (progn
               (print (loc p))
               (print "Moving Right")
+              (setf lastPosition (loc p))
+              (setf Newpath (cdr Newpath))
               (setf (loc p) (nth (+ tempcountNew 1) agent-map))
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
-              (setf Newpath (cdr Newpath))
+              
               
               )
               )
@@ -317,10 +318,12 @@
               (progn
               (print (loc p))
               (print "Moving Left")
+              (setf lastPosition (loc p))
+              (setf Newpath (cdr Newpath))
               (setf (loc p) (nth (- tempcountNew 1) agent-map))
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
-              (setf Newpath (cdr Newpath))
+             
              
               )
               )
@@ -331,10 +334,12 @@
               (progn
               (print (loc p))
               (print "Moving Down")
+              (setf lastPosition (loc p))
+              (setf Newpath (cdr Newpath))
               (setf (loc p) (nth (+ tempcountNew rowSizeNew) agent-map))
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
-              (setf Newpath (cdr Newpath))
+            
               
               )
               )
@@ -344,35 +349,18 @@
               (progn
               (print (loc p))
               (print "Moving Up")
+              (setf lastPosition (loc p))
+              (setf Newpath (cdr Newpath))
               (setf (loc p) (nth (- tempcountNew rowSizeNew) agent-map))
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
-              (setf Newpath (cdr Newpath))
-              
-              )
-              )
-
-            )
-
-          )
-
-
-        ((not(equalp (loc p) (nth tempcountNew world-map)))
-
-          (print "fuck")
-
-
-          )
-
-
-
-        );end of do
+              )))));end of do
       do(if(<= tempcountNew (list-length agent-map))
+             
             (setf tempcountNew (+ 1 tempcountNew)))
-
       )
-
     do(setf tempcountNew 0)
+
     )
 
    (print (loc p))
@@ -380,16 +368,36 @@
 
 )
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; This function adds the input in from the file and read in 
+;;; the map size, object, agent(marked with an R), and goal potition 
+;;; This also creates the worldMAp and the agentMap.
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
+
 (defun input-world()
-(input)                        ;this automaticly read in the file
+(input)                      
 (read_input object)
 )
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; 
+;;; This is used to start the follow-path function.
+;;; The input for follow-path is as follows
+;;;
+;;; (follow-path (world-map) (agent-map)(the path created from search)(The Goal for the agent))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun Start()
-  (setf y '((0 0)(0 1)(0 2)(4 1)(1 3)(2 3)(3 3)(3 4)(4 4)))
-  ;(setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
+  ;(setf y '((0 0)(0 1)(0 2)(4 1)(1 3)(2 3)(3 3)(3 4)(4 4)))
+  (setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
   (follow-path worldMap (know p) y goal)
  
 
