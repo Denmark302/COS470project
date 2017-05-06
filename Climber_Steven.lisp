@@ -240,56 +240,61 @@
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; This should set the agent for the height of it current postition
+;;; and update the curret spot for the first time
+;;; 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-
-
-
-  
-
-
-
-
-
-
-;;the base knowledge of the agent
-
-(defun agent-knowledge-base (world-map agent-map sizeWorld agent1)
+(defun setup-agent (world-map agent-map)
 ;;update the agent
-(setf x (nth 0 (loc agent1)))
-(setf y (nth 1 (loc agent1)))
+(setf x (nth 0 (loc p)))
+(setf y (nth 1 (loc p)))
 ;grab current postion(x y z)
-(setf currentPos (grab-currentPOS-height x y world-map))
-(update-agent-world world-Map agent-map sizeWorld currentPos)
+(setf (loc p) (grab-currentPOS-height x y world-map))
+(update-agent-world world-Map agent-map (list-length world-map) (loc p))
 ;check which node is srrounding height, it max height
 
 )
 
-
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; used in the setup-agent
+;;; This is used to grab the height of the agents starting postion
+;;; 
+;;; 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun grab-currentPOS-height(x y world-map)
   (loop for a in world-map
     do(cond
       ((and (= y (nth 1 a)) (= x (nth 0 a)) )
         (return a)))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; This function runs the path given by the search in a list of (x,y)
+;;; format list. ex: ((x,y) (x,y).....)
+;;; This will run until it reaches the goal or is stuck from height 
+;;; being larger then the max height given.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun follow-path (world-map agent-map path goal)
   (setf Newpath path)
   (setf tempcountNew 0)
   (setf rowSizeNew (nth 0 worldSize))
-  (update-agent-world world-map agent-map (list-length agent-map) (loc p))
+  (setup-agent world-map agent-map)
   (print-world (know p) worldsize)
-  (print "Done updating")
+ 
   (loop while(not (equalp (list (nth 0 (loc p)) (nth 1 (loc P))) goal))
     ;loop in the world map
     do(loop for num in agent-map
-      do(print goal)
+
       do(cond
         ;create list of (x,y) then compare with list of (x,y)
 
-        ((equalp(list(nth 0 (loc p))(nth 1 (loc p))) (nth 0 Newpath))
+        ((and(equalp(list(nth 0 (loc p))(nth 1 (loc p))) (nth 0 Newpath)) (equalp (loc p) (nth tempcountNew world-map)))
           
             (ignore-errors
               ;check right of the agent map
@@ -302,7 +307,7 @@
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
               (setf Newpath (cdr Newpath))
-             
+              
               )
               )
 
@@ -310,7 +315,7 @@
               (<= (nth 2 (nth (- tempcountNew 1) agent-map))) (c-max p))
               (progn
               (print (loc p))
-              (print "Moving Right")
+              (print "Moving Left")
               (setf (loc p) (nth (- tempcountNew 1) agent-map))
               (update-agent-world world-map agent-map (list-length agent-map) (loc p))
               (print-world (know p) worldsize)
@@ -347,20 +352,20 @@
               )
 
             )
-          )
 
-     
+          )
         );end of do
       do(if(<= tempcountNew (list-length agent-map))
             (setf tempcountNew (+ 1 tempcountNew)))
 
       )
 
-
     do(setf tempcountNew 0)
     )
 
-  (print "found Goal")
+   (print (loc p))
+   (print "found Goal")
+
 )
 
 (defun input-world()
@@ -371,6 +376,7 @@
 
 
 (defun newStart()
+ ; (setf y '((0 0)(0 1)(0 2)(4 1)(1 3)(2 3)(3 3)(3 4)(4 4)))
   (setf y '((0 0)(0 1)(0 2)(0 3)(1 3)(2 3)(3 3)(3 4)(4 4)))
   (follow-path worldMap (know p) y goal)
  
@@ -378,14 +384,3 @@
 )
 
 
-(defun start()
-
-(print "World Map")            ;this passes the object into a gobal variable
-(print-world worldMap worldSize)
-(print "Agent Map ")
-(print-world agentMap worldSize)
-(print "Agent works ")
-(agent-knowledge-base worldMap agentMap (list-length agentMap) p)
-(print "Agent Map ")
-(print-world agentMap worldSize)
-)
